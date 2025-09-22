@@ -53,6 +53,52 @@ app.get("/image/users/:id", (req, res) => {
   res.status(404).send("User no existe");
 });
 
+app.use(express.json()); // middleware
+app.post("/users", (req, res) => {
+  console.log(req.body);
+  res.send("escribimos un user");
+
+  const nvo_id = users.length + 1;
+  const new_user = {
+    id: nvo_id,
+    nombre: req.body.nombre,
+    apellido: req.body.apellido,
+    foto: "foto" + nvo_id + ".jpg",
+  };
+  users.push(new_user);
+});
+
+app.put("/users", (req, res) => {
+  const user = users.find((u) => u.id == req.query.id);
+  console.log(user);
+  if (!user) return res.status(404).send("User no existe");
+
+  user.nombre = req.body.nombre;
+  user.apellido = req.body.apellido;
+
+  res.json(user);
+
+  /*   const id_act = req.query.id;
+  console.log(req.query.id);
+  console.log(req.body); */
+
+  res.send("actualizamos un user");
+});
+
+app.delete("/users", (req, res) => {
+  const userIndex = users.findIndex((u) => u.id == req.query.id);
+
+  if (!userIndex) return res.status(404).send("User no existe");
+
+  users.splice(userIndex, 1);
+
+  res.status(204).send();
+});
+
+app.use((req, res) => {
+  res.status(404).send("el recurso no existe");
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
